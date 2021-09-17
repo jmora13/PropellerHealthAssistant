@@ -23,38 +23,27 @@ class HealthViewModel @Inject constructor(private val repository: HealthReposito
     val allEvents: LiveData<List<Event>> = repository.allEvents.asLiveData()
     //val allMedication: LiveData<List<Medication>> = repository.allMedication.asLiveData()
 
-    fun insert(event: Event) = viewModelScope.launch{
-        repository.insert(event)
-    }
-
-    fun insertMedication(medication: Medication) = viewModelScope.launch{
-        repository.insertMedication(medication)
-    }
-
-    fun insertUser(user: User) = viewModelScope.launch{
-        repository.insertUser(user)
-    }
-
-    fun getMedication(): List<Medication>{
-        return repository.getMedication()
-    }
-
     fun getUser(): User{
         return repository.getUser()
     }
 
-    suspend fun getNetworkResponse(){
-        val response = healthService.getHealthData().body()
+    fun insert(event: Event) = viewModelScope.launch{
+        repository.insert(event)
+    }
 
-        insertUser(response!!.user) // INSERT USER PROFILE
-
-        for(event in response!!.events!!){ //INSERT ALL EVENTS
-            insert(event)
+    fun getNetworkResponse(){
+        viewModelScope.launch{
+            try{
+                repository.getMedication()
+            } catch (e: IOException){
+                Log.d("IOEXCEPTION", e.message.toString())
+                return@launch
+            } catch(e: HttpException){
+                Log.d("HTTPEXCEPTION", e.stackTrace.toString())
+                return@launch
+            }
         }
 
-        for(medication in response!!.user.medications){ //INSERT MEDICATION LIST
-            insertMedication(medication)
-        }
     }
 
 }

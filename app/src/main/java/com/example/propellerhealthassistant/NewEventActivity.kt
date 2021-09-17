@@ -34,20 +34,25 @@ class NewEventActivity : AppCompatActivity(), Serializable {
         datePicker = findViewById(R.id.datePicker)
         timePicker = findViewById(R.id.timePicker)
         spinner = findViewById(R.id.spinner)
-        var medication = healthViewModel.getMedication()
-        for(i in medication.indices){
-            map.put(medication[i].name.uppercase(), medication[i].medicationtype)
-        }
-        ArrayAdapter( //INITIALIZE SPINNER
-            this,
-            android.R.layout.simple_spinner_item,
-            map.keys.toMutableList()
-        ).also { adapter ->
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            spinner.adapter = adapter
+        //var medication = healthViewModel.getMedication()
+        healthViewModel.allEvents.observe(this){ medicationList -> //GET ALL EVENTS AND ADD TO RECYCLERVIEW
+            for(i in medicationList.indices){
+                map.put(medicationList[i].medication.uppercase(), medicationList[i].medicationtype)
+            }
+            ArrayAdapter( //INITIALIZE SPINNER
+                this,
+                android.R.layout.simple_spinner_item,
+                map.keys.toMutableList()
+            ).also { adapter ->
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                spinner.adapter = adapter
+            }
         }
 
+        initCalenderPicker()
+    }
 
+    fun initCalenderPicker(){
         val today = Calendar.getInstance()
         binding.datePicker.init(today.get(Calendar.YEAR), today.get(Calendar.MONTH), //CALENDAR PICKER INITIALIZED TO TODAYS DATE
             today.get(Calendar.DAY_OF_MONTH)

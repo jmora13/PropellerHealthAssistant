@@ -1,5 +1,6 @@
 package com.example.propellerhealthassistant.data
 
+import com.example.propellerhealthassistant.api.HealthService
 import com.example.propellerhealthassistent.model.Event
 import com.example.propellerhealthassistent.model.Medication
 import com.example.propellerhealthassistent.model.User
@@ -8,7 +9,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class HealthRepository @Inject constructor(private val healthDao: HealthDao) {
+class HealthRepository @Inject constructor(private val healthService: HealthService, private val healthDao: HealthDao) {
 
     val allEvents: Flow<List<Event>> = healthDao.getEvents()
 
@@ -20,8 +21,17 @@ class HealthRepository @Inject constructor(private val healthDao: HealthDao) {
         healthDao.insertMedication(medication)
     }
 
-    fun getMedication(): List<Medication>{
-        return healthDao.getMedication()
+    suspend fun getMedication(){
+        val response =  healthService.getHealthData().body()
+        insertUser(response?.user!!) // INSERT USER PROFILE
+
+        for(event in response.events){ //INSERT ALL EVENTS
+            insert(event)
+        }
+
+        for(medication in response.user.medications){ //INSERT MEDICATION LIST
+            insertMedication(medication)
+        }
     }
 
     suspend fun insertUser(user: User){

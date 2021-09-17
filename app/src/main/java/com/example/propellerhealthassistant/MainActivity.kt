@@ -34,18 +34,16 @@ class MainActivity : AppCompatActivity() {
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
         setSupportActionBar(binding.toolbar)
+
+        healthViewModel.getNetworkResponse()
         healthViewModel.allEvents.observe(this){ events -> //GET ALL EVENTS AND ADD TO RECYCLERVIEW
             events.let{ adapter.submitList(it) }
+            binding.spinner.visibility = View.GONE //REMOVE SPINNER
         }
 
         binding.fab.setOnClickListener { view -> //ADD NEW EVENT BUTTON
             val intent = Intent(this@MainActivity, NewEventActivity::class.java)
             startActivityForResult(intent, newEventActivityRequestCode)
-        }
-
-        lifecycleScope.launchWhenCreated {
-            healthViewModel.getNetworkResponse()
-            binding.spinner.visibility = View.GONE //REMOVE SPINNER
         }
 
     }

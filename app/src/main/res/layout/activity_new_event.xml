@@ -40,7 +40,7 @@
         android:layout_height="wrap_content"
         android:background="@color/propeller_blue"
         android:text="@string/save"
-        android:layout_margin="100dp"
+        android:layout_margin="50dp"
         android:textColor="@color/black" />
 
 
