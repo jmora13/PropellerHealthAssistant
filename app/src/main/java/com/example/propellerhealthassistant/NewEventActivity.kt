@@ -63,7 +63,7 @@ class NewEventActivity : AppCompatActivity(), Serializable {
         }
     }
 
-    fun saveEvent(view: View) { //SAVE VALUES PICKED IN NEW ACTIVITY
+    fun saveEvent() { //SAVE VALUES PICKED IN NEW ACTIVITY
         val eventIntent = Intent()
         val type = spinner.selectedItem.toString()
         val year = datePicker.year
